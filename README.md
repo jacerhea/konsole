@@ -237,33 +237,55 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Konsole;
 
-static void Main(string[] args) {
-
-    var dirCnt = 15;
-    var filesPerDir = 30;
-
-    var r = new Random();
-    var dirs = TestData.MakeObjectNames(dirCnt);
-
-    Console.WriteLine("Press enter to start");
-
-    var tasks = new List<Task>();
-    var bars = new ConcurrentBag<ProgressBar>(); 
-    foreach (var d in dirs)
+class Program
+{
+    static void Main(string[] args)
     {
-        var files = TestData.MakeNames(r.Next(filesPerDir));
-        var bar = new ProgressBar(files.Count());
-        bars.Add(bar);
-        bar.Refresh(0, d);
-        tasks.Add(ProcessFakeFiles(d, files, bar));
+        var dirCnt = 15;
+        var filesPerDir = 30;
+
+        var r = new Random();
+        var dirs = TestData.MakeObjectNames(dirCnt);
+
+        Console.WriteLine("Press enter to start");
+
+        var tasks = new List<Task>();
+        var bars = new ConcurrentBag<ProgressBar>();
+
+        Console.ReadLine();
+        var start = true;
+
+        foreach (var d in dirs)
+        {
+            var files = TestData.MakeNames(r.Next(filesPerDir));
+            var bar = new ProgressBar(files.Count());
+            bars.Add(bar);
+            bar.Refresh(0, d);
+            tasks.Add(ProcessFakeFiles(files, bar));
+        }
+
+        Task.WaitAll(tasks.ToArray());
+        Console.WriteLine("finished.");
+        Console.ReadLine();
+
+        Task ProcessFakeFiles(string[] files, ProgressBar bar)
+        {
+            return Task.Run(() =>
+            {
+                var r = new Random();
+                while (!start) { Thread.Sleep(50); };
+                bar.Max = files.Length;
+                for (int i = 1; i <= files.Length; i++)
+                {
+                    bar.Refresh(i, files[i - 1]);
+                    Thread.Sleep(r.Next(500));
+                }
+            });
+        }
     }
-    Console.ReadLine();
-    start = true;
-    Task.WaitAll(tasks.ToArray());
-    Console.WriteLine("finished.");
-    Console.ReadLine();
-}    
+}
 ```
 
 #### DoubleLine progress bar
