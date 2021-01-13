@@ -119,22 +119,14 @@ Alan
 
 ```csharp
 
-using Konsole.Internal;
 using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Konsole;
 using static System.ConsoleColor;
 
 class Program
 {
     static void Main(string[] args)
     {
-
-        // quick dive in example 
-
-        void Wait() => Console.ReadKey(true);
-
         // show how you can mix and match System.Console with Konsole
         Console.WriteLine("line one");
 
@@ -143,35 +135,38 @@ class Program
         // returns a Window that implements IConsole 
         // that you can use to write to the window 
         // and create new windows inside that window.
-        
-        var nyse = Window.OpenBox("NYSE", 20, 12, new BoxStyle() { 
-            ThickNess = LineThickNess.Single, 
-            Title = new Colors(White, Red) 
+
+        var nyse = Window.OpenBox("NYSE", 20, 12, new BoxStyle()
+        {
+            ThickNess = LineThickNess.Single,
+            Title = new Colors(White, Red)
         });
-        
+
         Console.WriteLine("line two");
 
         // create another inline Box window at the current cursor position
-        var ftse100 = Window.OpenBox("FTSE 100", 20, 12, new BoxStyle() { 
-            ThickNess = LineThickNess.Double, 
-            Title = new Colors(White, Blue) 
+        var ftse100 = Window.OpenBox("FTSE 100", 20, 12, new BoxStyle()
+        {
+            ThickNess = LineThickNess.Double,
+            Title = new Colors(White, Blue)
         });
+
         Console.Write("line three");
-
-
-        while(true) {
-            Tick(nyse, "AMZ", amazon -= 0.04M, Red, '-', 4.1M);
-            Tick(ftse100, "BP", bp += 0.05M, Green, '+', 7.2M);
-            Wait();
-        }
 
         decimal amazon = 84;
         decimal bp = 146;
 
+        while (true)
+        {
+            Tick(nyse, "AMZ", amazon -= 0.04M, Red, '-', 4.1M);
+            Tick(ftse100, "BP", bp += 0.05M, Green, '+', 7.2M);
+            Console.ReadKey(true);
+        }
+
         // simple method that takes a window and prints a stock price 
         // to that window in color
-        void Tick(IConsole con, string sym, decimal newPrice, 
-           ConsoleColor color, char sign, decimal perc) 
+        void Tick(IConsole con, string sym, decimal newPrice,
+           ConsoleColor color, char sign, decimal perc)
         {
             con.Write(White, $"{sym,-10}");
             con.WriteLine(color, $"{newPrice:0.00}");
