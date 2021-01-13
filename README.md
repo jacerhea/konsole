@@ -188,7 +188,7 @@ var box = Window.OpenBox("warnings", new BoxStyle() { Title = new Colors(Console
 ```
 becomes
 ```csharp
-using static System.Console;
+using static System.ConsoleColor;
 ...
 Console.WriteLine(Red, "I am red"); 
 var box = Window.OpenBox("warnings", new BoxStyle() { Title = new Colors(White, Red) })
